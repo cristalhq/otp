@@ -144,6 +144,14 @@ func (k *Key) Period() uint64 {
 	return 30 // If no period is defined 30 seconds is the default per (RFC 6238)
 }
 
-func b32NoPadding(src []byte) string {
+func b32Dec(s string) ([]byte, error) {
+	// add padding if missing
+	if n := len(s) % 8; n != 0 {
+		s += strings.Repeat("=", 8-n)
+	}
+	return base32.StdEncoding.DecodeString(s)
+}
+
+func b32EncNoPadding(src []byte) string {
 	return base32.StdEncoding.WithPadding(base32.NoPadding).EncodeToString(src)
 }

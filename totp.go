@@ -46,7 +46,7 @@ func (t *TOTP) GenerateURL(account string, secret []byte) string {
 	v.Set("algorithm", t.algo.String())
 	v.Set("digits", t.digits.String())
 	v.Set("issuer", t.issuer)
-	v.Set("secret", b32NoPadding(secret))
+	v.Set("secret", b32EncNoPadding(secret))
 	v.Set("period", strconv.FormatUint(uint64(t.period), 10))
 
 	u := url.URL{

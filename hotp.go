@@ -3,11 +3,9 @@ package otp
 import (
 	"crypto/hmac"
 	"crypto/subtle"
-	"encoding/base32"
 	"encoding/binary"
 	"math"
 	"net/url"
-	"strings"
 )
 
 // HOTP represents HOTP codes generator and validator.
@@ -38,7 +36,7 @@ func (h *HOTP) GenerateURL(account string, secret []byte) string {
 	v.Set("algorithm", h.algo.String())
 	v.Set("digits", h.digits.String())
 	v.Set("issuer", h.issuer)
-	v.Set("secret", b32NoPadding(secret))
+	v.Set("secret", b32EncNoPadding(secret))
 
 	u := url.URL{
 		Scheme:   "otpauth",
@@ -51,12 +49,7 @@ func (h *HOTP) GenerateURL(account string, secret []byte) string {
 
 // GenerateCode for the given counter and secret.
 func (h *HOTP) GenerateCode(counter uint64, secret string) (string, error) {
-	// add padding if missing
-	if n := len(secret) % 8; n != 0 {
-		secret += strings.Repeat("=", 8-n)
-	}
-
-	secretBytes, err := base32.StdEncoding.DecodeString(secret)
+	secretBytes, err := b32Dec(secret)
 	if err != nil {
 		return "", ErrEncodingNotValid
 	}
