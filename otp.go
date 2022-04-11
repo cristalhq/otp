@@ -10,6 +10,7 @@ import (
 var (
 	ErrUnsupportedAlgorithm = errors.New("unsupported algorithm")
 	ErrEmptyIssuer          = errors.New("empty issuer")
+	ErrPeriodNotValid       = errors.New("period is not valid")
 	ErrCodeLengthMismatch   = errors.New("code length mismatch")
 	ErrCodeIsNotValid       = errors.New("code is not valid")
 	ErrEncodingNotValid     = errors.New("encoding is not valid")
@@ -57,7 +58,7 @@ func (a Algorithm) Hash() hash.Hash {
 }
 
 // Digits is the number of digits in the OTP passcode.
-type Digits int
+type Digits uint
 
 // Six and Eight are the most common values.
 const (
