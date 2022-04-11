@@ -6,6 +6,7 @@ import (
 	"encoding/base32"
 	"encoding/binary"
 	"math"
+	"net/url"
 	"strings"
 )
 
@@ -29,6 +30,23 @@ func NewHOTP(algo Algorithm, digits Digits, issuer string) (*HOTP, error) {
 		digits: digits,
 		issuer: issuer,
 	}, nil
+}
+
+// GenerateURL for the account for a given secret.
+func (h *HOTP) GenerateURL(account string, secret []byte) string {
+	v := url.Values{}
+	v.Set("algorithm", h.algo.String())
+	v.Set("digits", h.digits.String())
+	v.Set("issuer", h.issuer)
+	v.Set("secret", b32NoPadding(secret))
+
+	u := url.URL{
+		Scheme:   "otpauth",
+		Host:     "hotp",
+		Path:     "/" + h.issuer + ":" + account,
+		RawQuery: v.Encode(),
+	}
+	return u.String()
 }
 
 // GenerateCode for the given counter and secret.

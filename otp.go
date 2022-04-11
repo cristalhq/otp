@@ -4,6 +4,7 @@ import (
 	"crypto/sha1"
 	"crypto/sha256"
 	"crypto/sha512"
+	"encoding/base32"
 	"errors"
 	"fmt"
 	"hash"
@@ -76,4 +77,8 @@ func (d Digits) Length() int { return int(d) }
 // Format the number to a digit format (zero-filled upto digits size).
 func (d Digits) Format(n int) string {
 	return fmt.Sprintf(fmt.Sprintf("%%0%dd", d), n)
+}
+
+func b32NoPadding(src []byte) string {
+	return base32.StdEncoding.WithPadding(base32.NoPadding).EncodeToString(src)
 }

@@ -2,6 +2,8 @@ package otp
 
 import (
 	"math"
+	"net/url"
+	"strconv"
 	"time"
 )
 
@@ -36,6 +38,24 @@ func NewTOTP(algo Algorithm, digits Digits, issuer string, period, skew int) (*T
 		period: period,
 		skew:   skew,
 	}, nil
+}
+
+// GenerateURL for the account for a given secret.
+func (t *TOTP) GenerateURL(account string, secret []byte) string {
+	v := url.Values{}
+	v.Set("algorithm", t.algo.String())
+	v.Set("digits", t.digits.String())
+	v.Set("issuer", t.issuer)
+	v.Set("secret", b32NoPadding(secret))
+	v.Set("period", strconv.FormatUint(uint64(t.period), 10))
+
+	u := url.URL{
+		Scheme:   "otpauth",
+		Host:     "totp",
+		Path:     "/" + t.issuer + ":" + account,
+		RawQuery: v.Encode(),
+	}
+	return u.String()
 }
 
 // GenerateCode for the given counter and secret.
