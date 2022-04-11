@@ -4,8 +4,15 @@ import (
 	"crypto/sha1"
 	"crypto/sha256"
 	"crypto/sha512"
+	"errors"
 	"fmt"
 	"hash"
+var (
+	ErrUnsupportedAlgorithm = errors.New("unsupported algorithm")
+	ErrEmptyIssuer          = errors.New("empty issuer")
+	ErrCodeLengthMismatch   = errors.New("code length mismatch")
+	ErrCodeIsNotValid       = errors.New("code is not valid")
+	ErrEncodingNotValid     = errors.New("encoding is not valid")
 )
 
 // Algorithm represents the hashing function to use for OTP.
@@ -16,6 +23,7 @@ const (
 	AlgorithmSHA1    Algorithm = 1
 	AlgorithmSHA256  Algorithm = 2
 	AlgorithmSHA512  Algorithm = 3
+	algorithmMax     Algorithm = 4
 )
 
 func (a Algorithm) String() string {
