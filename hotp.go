@@ -53,7 +53,7 @@ func (h *HOTP) GenerateURL(account string, secret []byte) string {
 func (h *HOTP) GenerateCode(counter uint64, secret string) (string, error) {
 	// add padding if missing
 	if n := len(secret) % 8; n != 0 {
-		secret = secret + strings.Repeat("=", 8-n)
+		secret += strings.Repeat("=", 8-n)
 	}
 
 	secretBytes, err := base32.StdEncoding.DecodeString(secret)

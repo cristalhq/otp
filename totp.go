@@ -78,7 +78,7 @@ func (t *TOTP) Validate(passcode string, at time.Time, secret string) error {
 	counter := int64(math.Floor(float64(at.Unix()) / float64(t.period)))
 	counters = append(counters, uint64(counter))
 
-	for i := 1; i <= int(t.skew); i++ {
+	for i := 1; i <= t.skew; i++ {
 		counters = append(counters, uint64(counter+int64(i)), uint64(counter-int64(i)))
 	}
 
