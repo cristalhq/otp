@@ -8,6 +8,9 @@ import (
 	"errors"
 	"fmt"
 	"hash"
+	"net/url"
+	"strconv"
+	"strings"
 )
 
 var (
@@ -77,6 +80,68 @@ func (d Digits) Length() int { return int(d) }
 // Format the number to a digit format (zero-filled upto digits size).
 func (d Digits) Format(n int) string {
 	return fmt.Sprintf(fmt.Sprintf("%%0%dd", d), n)
+}
+
+// Key represents an HTOP or TOTP key.
+type Key struct {
+	url    *url.URL
+	values url.Values
+}
+
+// ParseKeyFromURL creates a new Key from the HOTP or TOTP URL.
+// See: https://github.com/google/google-authenticator/wiki/Key-Uri-Format
+func ParseKeyFromURL(s string) (*Key, error) {
+	u, err := url.Parse(s)
+	if err != nil {
+		return nil, err
+	}
+	key := &Key{
+		url:    u,
+		values: u.Query(),
+	}
+	return key, nil
+}
+
+func (k *Key) String() string { return k.url.String() }
+
+// Type returns "hotp" or "totp".
+func (k *Key) Type() string { return k.url.Host }
+
+// Secret returns the opaque secret for this Key.
+func (k *Key) Secret() string { return k.values.Get("secret") }
+
+// Issuer returns the name of the issuing organization.
+func (k *Key) Issuer() string {
+	issuer := k.values.Get("issuer")
+	if issuer != "" {
+		return issuer
+	}
+
+	p := strings.TrimPrefix(k.url.Path, "/")
+	if i := strings.Index(p, ":"); i != -1 {
+		return p[:i]
+	}
+	return ""
+}
+
+// Account returns the name of the user's account.
+func (k *Key) Account() string {
+	p := strings.TrimPrefix(k.url.Path, "/")
+	if i := strings.Index(p, ":"); i != -1 {
+		return p[i+1:]
+	}
+	return p
+}
+
+// Period returns a tiny int representing the rotation time in seconds.
+func (k *Key) Period() uint64 {
+	period := k.values.Get("period")
+
+	u, err := strconv.ParseUint(period, 10, 64)
+	if err == nil {
+		return u
+	}
+	return 30 // If no period is defined 30 seconds is the default per (RFC 6238)
 }
 
 func b32NoPadding(src []byte) string {
