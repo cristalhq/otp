@@ -9,7 +9,7 @@ import (
 type tcTOTP struct {
 	ts     int64
 	code   string
-	mode   Algorithm
+	algo   Algorithm
 	secret string
 }
 
@@ -43,7 +43,7 @@ var totpRFCTestCases = []tcTOTP{
 
 func TestTOTP(t *testing.T) {
 	for _, tc := range totpRFCTestCases {
-		totp, err := NewTOTP(tc.mode, DigitsEight, "cristalhq", 30, 1)
+		totp, err := NewTOTP(tc.algo, DigitsEight, "cristalhq", 30, 1)
 		failIfErr(t, err)
 
 		at := time.Unix(tc.ts, 0).UTC()
