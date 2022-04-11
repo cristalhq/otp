@@ -7,6 +7,8 @@ import (
 	"errors"
 	"fmt"
 	"hash"
+)
+
 var (
 	ErrUnsupportedAlgorithm = errors.New("unsupported algorithm")
 	ErrEmptyIssuer          = errors.New("empty issuer")
