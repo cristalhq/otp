@@ -55,3 +55,30 @@ func TestTOTP(t *testing.T) {
 		failIfErr(t, err)
 	}
 }
+
+func TestNewTOTP(t *testing.T) {
+	var err error
+	_, err = NewTOTP(-1, DigitsEight, "cristalhq", 30, 1)
+	mustEqual(t, err, ErrUnsupportedAlgorithm)
+
+	_, err = NewTOTP(1, DigitsEight, "", 30, 1)
+	mustEqual(t, err, ErrEmptyIssuer)
+
+	_, err = NewTOTP(1, DigitsEight, "cristalhq", -30, 1)
+	mustEqual(t, err, ErrPeriodNotValid)
+
+	_, err = NewTOTP(1, DigitsEight, "cristalhq", 30, -1)
+	mustEqual(t, err, ErrSkewNotValid)
+}
+
+func TestTOTPGenerateURL(t *testing.T) {
+	totp, err := NewTOTP(AlgorithmSHA1, DigitsEight, "cristalhq", 30, 1)
+	failIfErr(t, err)
+
+	var url string
+	url = totp.GenerateURL("alice@bob.com", []byte("SECRET_STRING"))
+	mustEqual(t, url, "otpauth://totp/cristalhq:alice@bob.com?algorithm=SHA1&digits=8&issuer=cristalhq&period=30&secret=KNCUGUSFKRPVGVCSJFHEO")
+
+	url = totp.GenerateURL("bob@alice.com", []byte("SECRET_STRING"))
+	mustEqual(t, url, "otpauth://totp/cristalhq:bob@alice.com?algorithm=SHA1&digits=8&issuer=cristalhq&period=30&secret=KNCUGUSFKRPVGVCSJFHEO")
+}

@@ -17,6 +17,7 @@ var (
 	ErrUnsupportedAlgorithm = errors.New("unsupported algorithm")
 	ErrEmptyIssuer          = errors.New("empty issuer")
 	ErrPeriodNotValid       = errors.New("period is not valid")
+	ErrSkewNotValid         = errors.New("skew is not valid")
 	ErrCodeLengthMismatch   = errors.New("code length mismatch")
 	ErrCodeIsNotValid       = errors.New("code is not valid")
 	ErrEncodingNotValid     = errors.New("encoding is not valid")

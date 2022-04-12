@@ -38,3 +38,24 @@ func TestHOTP(t *testing.T) {
 		failIfErr(t, err)
 	}
 }
+
+func TestNewHOTP(t *testing.T) {
+	var err error
+	_, err = NewHOTP(-1, DigitsEight, "cristalhq")
+	mustEqual(t, err, ErrUnsupportedAlgorithm)
+
+	_, err = NewHOTP(1, DigitsEight, "")
+	mustEqual(t, err, ErrEmptyIssuer)
+}
+
+func TestHOTPGenerateURL(t *testing.T) {
+	hotp, err := NewHOTP(AlgorithmSHA1, DigitsEight, "cristalhq")
+	failIfErr(t, err)
+
+	var url string
+	url = hotp.GenerateURL("alice@bob.com", []byte("SECRET_STRING"))
+	mustEqual(t, url, "otpauth://hotp/cristalhq:alice@bob.com?algorithm=SHA1&digits=8&issuer=cristalhq&secret=KNCUGUSFKRPVGVCSJFHEO")
+
+	url = hotp.GenerateURL("bob@alice.com", []byte("SECRET_STRING"))
+	mustEqual(t, url, "otpauth://hotp/cristalhq:bob@alice.com?algorithm=SHA1&digits=8&issuer=cristalhq&secret=KNCUGUSFKRPVGVCSJFHEO")
+}

@@ -10,7 +10,6 @@ import (
 // TOTP represents TOTP codes generator and validator.
 type TOTP struct {
 	*HOTP
-	issuer string
 	period int
 	skew   int
 }
@@ -27,8 +26,9 @@ func NewTOTP(algo Algorithm, digits Digits, issuer string, period, skew int) (*T
 		return nil, ErrPeriodNotValid
 	}
 	if skew < 1 {
-		return nil, ErrPeriodNotValid
+		return nil, ErrSkewNotValid
 	}
+
 	hotp, err := NewHOTP(algo, digits, issuer)
 	if err != nil {
 		return nil, err
