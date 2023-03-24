@@ -1,33 +1,17 @@
 name: build
 
-permissions: read-all
-
 on:
   push:
     branches: [main]
   pull_request:
-  workflow_dispatch:
-    inputs:
-      tag:
-        description: 'Tag to create'
-        required: true
-        default: 'v0.0.0'
+    branches: [main]
+  schedule:
+    - cron: '0 0 * * 0' # run "At 00:00 on Sunday"
 
 # See https://github.com/cristalhq/.github/.github/workflows
 jobs:
   build:
-    uses: cristalhq/.github/.github/workflows/build.yml@d8f219c7111863d360a6c6f978ee64d6371a045e # latest on main
+    uses: cristalhq/.github/.github/workflows/build.yml@v0.5.0
 
-  codeql:
-    if: github.event.repository.public
-    permissions:
-      security-events: write
-    uses: cristalhq/.github/.github/workflows/codeql.yml@d8f219c7111863d360a6c6f978ee64d6371a045e # latest on main
-
-  release:
-    if: github.event_name == 'workflow_dispatch'
-    uses: cristalhq/.github/.github/workflows/release.yml@d8f219c7111863d360a6c6f978ee64d6371a045e # latest on main
-    permissions: 
-      contents: write
-    with:
-      tag: ${{ github.event.input.tag }}
+  vuln:
+    uses: cristalhq/.github/.github/workflows/vuln.yml@v0.5.0
