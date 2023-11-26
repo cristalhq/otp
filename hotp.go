@@ -10,38 +10,46 @@ import (
 
 // HOTP represents HOTP codes generator and validator.
 type HOTP struct {
-	algo   Algorithm
-	digits Digits
-	issuer string
+	cfg HOTPConfig
+}
+
+type HOTPConfig struct {
+	Algo   Algorithm
+	Digits Digits
+	Issuer string
+}
+
+func (cfg HOTPConfig) Validate() error {
+	switch {
+	case cfg.Algo < 0 || cfg.Algo >= algorithmMax:
+		return ErrUnsupportedAlgorithm
+	case cfg.Issuer == "":
+		return ErrEmptyIssuer
+	default:
+		return nil
+	}
 }
 
 // NewHOTP creates new HOTP.
-func NewHOTP(algo Algorithm, digits Digits, issuer string) (*HOTP, error) {
-	if algo < 0 || algo >= algorithmMax {
-		return nil, ErrUnsupportedAlgorithm
+func NewHOTP(cfg HOTPConfig) (*HOTP, error) {
+	if err := cfg.Validate(); err != nil {
+		return nil, err
 	}
-	if issuer == "" {
-		return nil, ErrEmptyIssuer
-	}
-	return &HOTP{
-		algo:   algo,
-		digits: digits,
-		issuer: issuer,
-	}, nil
+	return &HOTP{cfg: cfg}, nil
 }
 
 // GenerateURL for the account for a given secret.
 func (h *HOTP) GenerateURL(account string, secret []byte) string {
 	v := url.Values{}
-	v.Set("algorithm", h.algo.String())
-	v.Set("digits", h.digits.String())
-	v.Set("issuer", h.issuer)
+	v.Set("algorithm", h.cfg.Algo.String())
+	v.Set("digits", h.cfg.Digits.String())
+	v.Set("issuer", h.cfg.Issuer)
 	v.Set("secret", b32EncNoPadding(secret))
 
 	u := url.URL{
 		Scheme:   "otpauth",
 		Host:     "hotp",
-		Path:     "/" + h.issuer + ":" + account,
+		Path:     "/" + h.cfg.Issuer + ":" + account,
 		RawQuery: v.Encode(),
 	}
 	return u.String()
@@ -57,7 +65,7 @@ func (h *HOTP) GenerateCode(counter uint64, secret string) (string, error) {
 	buf := make([]byte, 8)
 	binary.BigEndian.PutUint64(buf, counter)
 
-	mac := hmac.New(h.algo.Hash, secretBytes)
+	mac := hmac.New(h.cfg.Algo.Hash, secretBytes)
 	mac.Write(buf)
 	sum := mac.Sum(nil)
 
@@ -69,13 +77,13 @@ func (h *HOTP) GenerateCode(counter uint64, secret string) (string, error) {
 	value |= int64(sum[offset+2]&0xff) << 8
 	value |= int64(sum[offset+3] & 0xff)
 
-	length := int64(math.Pow10(h.digits.Length()))
-	return h.digits.Format(int(value % length)), nil
+	length := int64(math.Pow10(h.cfg.Digits.Length()))
+	return h.cfg.Digits.Format(int(value % length)), nil
 }
 
 // Validate the given passcode, counter and secret.
 func (h *HOTP) Validate(passcode string, counter uint64, secret string) error {
-	if len(passcode) != h.digits.Length() {
+	if len(passcode) != h.cfg.Digits.Length() {
 		return ErrCodeLengthMismatch
 	}
 
