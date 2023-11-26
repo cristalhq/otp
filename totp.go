@@ -10,12 +10,12 @@ import (
 // TOTP represents TOTP codes generator and validator.
 type TOTP struct {
 	*HOTP
-	period int
-	skew   int
+	period uint
+	skew   uint
 }
 
 // NewTOTP creates new TOTP.
-func NewTOTP(algo Algorithm, digits Digits, issuer string, period, skew int) (*TOTP, error) {
+func NewTOTP(algo Algorithm, digits Digits, issuer string, period, skew uint) (*TOTP, error) {
 	if algo < 0 || algo >= algorithmMax {
 		return nil, ErrUnsupportedAlgorithm
 	}
@@ -78,7 +78,7 @@ func (t *TOTP) Validate(passcode string, at time.Time, secret string) error {
 	counter := int64(math.Floor(float64(at.Unix()) / float64(t.period)))
 	counters = append(counters, uint64(counter))
 
-	for i := 1; i <= t.skew; i++ {
+	for i := uint(1); i <= t.skew; i++ {
 		counters = append(counters, uint64(counter+int64(i)), uint64(counter-int64(i)))
 	}
 
