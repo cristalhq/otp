@@ -1,8 +1,15 @@
 package otp
 
 import (
+	"encoding/base32"
 	"reflect"
 	"testing"
+)
+
+var (
+	secretSha1   = b32("12345678901234567890")
+	secretSha256 = b32("12345678901234567890123456789012")
+	secretSha512 = b32("1234567890123456789012345678901234567890123456789012345678901234")
 )
 
 func TestKey(t *testing.T) {
@@ -42,7 +49,7 @@ func TestKey(t *testing.T) {
 
 	for _, tc := range testCases {
 		key, err := ParseKeyFromURL(tc.url)
-		failIfErr(t, err)
+		mustOk(t, err)
 		mustEqual(t, key.String(), tc.url)
 		mustEqual(t, key.Type(), tc.typ)
 		mustEqual(t, key.Issuer(), tc.issuer)
@@ -52,16 +59,20 @@ func TestKey(t *testing.T) {
 	}
 }
 
-func failIfErr(t testing.TB, err error) {
-	t.Helper()
+func b32(s string) string {
+	return base32.StdEncoding.EncodeToString([]byte(s))
+}
+
+func mustOk(tb testing.TB, err error) {
+	tb.Helper()
 	if err != nil {
-		t.Fatal(err)
+		tb.Fatal(err)
 	}
 }
 
-func mustEqual(t testing.TB, got, want interface{}) {
-	t.Helper()
-	if !reflect.DeepEqual(got, want) {
-		t.Fatalf("got %v, want %v", got, want)
+func mustEqual(tb testing.TB, have, want interface{}) {
+	tb.Helper()
+	if !reflect.DeepEqual(have, want) {
+		tb.Fatalf("\nhave: %+v\nwant: %+v\n", have, want)
 	}
 }
