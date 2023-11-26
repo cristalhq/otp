@@ -59,3 +59,52 @@ func TestHOTPGenerateURL(t *testing.T) {
 	url = hotp.GenerateURL("bob@alice.com", []byte("SECRET_STRING"))
 	mustEqual(t, url, "otpauth://hotp/cristalhq:bob@alice.com?algorithm=SHA1&digits=8&issuer=cristalhq&secret=KNCUGUSFKRPVGVCSJFHEO")
 }
+
+func BenchmarkHOTP_GenerateURL(b *testing.B) {
+	hotp, err := NewHOTP(AlgorithmSHA1, DigitsEight, "cristalhq")
+	failIfErr(b, err)
+
+	account := "otp@cristalhq.dev"
+	secret := []byte(secretSha1)
+	b.ResetTimer()
+
+	for i := 0; i < b.N; i++ {
+		url := hotp.GenerateURL(account, secret)
+		failIfErr(b, err)
+
+		if url == "" {
+			b.Fail()
+		}
+	}
+}
+
+func BenchmarkHOTP_GenerateCode(b *testing.B) {
+	hotp, err := NewHOTP(AlgorithmSHA1, DigitsEight, "cristalhq")
+	failIfErr(b, err)
+
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		passcode, err := hotp.GenerateCode(uint64(i), secretSha1)
+		failIfErr(b, err)
+
+		if passcode == "" {
+			b.Fail()
+		}
+	}
+}
+
+func BenchmarkHOTP_Validate(b *testing.B) {
+	hotp, err := NewHOTP(AlgorithmSHA1, DigitsEight, "cristalhq")
+	failIfErr(b, err)
+
+	secret := secretSha1
+	passcode, err := hotp.GenerateCode(uint64(1), secretSha1)
+	failIfErr(b, err)
+
+	b.ResetTimer()
+
+	for i := 0; i < b.N; i++ {
+		err := hotp.Validate(passcode, 1, secret)
+		failIfErr(b, err)
+	}
+}
