@@ -67,12 +67,6 @@ func (a Algorithm) Hash() hash.Hash {
 // Digits is the number of digits in the OTP passcode.
 type Digits uint
 
-// Six and Eight are the most common values.
-const (
-	DigitsSix   Digits = 6
-	DigitsEight Digits = 8
-)
-
 func (d Digits) String() string { return fmt.Sprintf("%d", d) }
 
 // Length of the passcode.
