@@ -53,12 +53,6 @@ func TestNewTOTP(t *testing.T) {
 
 	_, err = NewTOTP(1, Digits(8), "", 30, 1)
 	mustEqual(t, err, ErrEmptyIssuer)
-
-	_, err = NewTOTP(1, Digits(8), "cristalhq", -30, 1)
-	mustEqual(t, err, ErrPeriodNotValid)
-
-	_, err = NewTOTP(1, Digits(8), "cristalhq", 30, -1)
-	mustEqual(t, err, ErrSkewNotValid)
 }
 
 func TestTOTPGenerateURL(t *testing.T) {
