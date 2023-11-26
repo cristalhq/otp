@@ -82,3 +82,53 @@ func TestTOTPGenerateURL(t *testing.T) {
 	url = totp.GenerateURL("bob@alice.com", []byte("SECRET_STRING"))
 	mustEqual(t, url, "otpauth://totp/cristalhq:bob@alice.com?algorithm=SHA1&digits=8&issuer=cristalhq&period=30&secret=KNCUGUSFKRPVGVCSJFHEO")
 }
+
+func BenchmarkTOTP_GenerateURL(b *testing.B) {
+	totp, err := NewTOTP(AlgorithmSHA1, DigitsEight, "cristalhq", 30, 1)
+	failIfErr(b, err)
+
+	account := "otp@cristalhq.dev"
+	secret := []byte(secretSha1)
+	b.ResetTimer()
+
+	for i := 0; i < b.N; i++ {
+		url := totp.GenerateURL(account, secret)
+		failIfErr(b, err)
+
+		if url == "" {
+			b.Fail()
+		}
+	}
+}
+
+func BenchmarkTOTP_GenerateCode(b *testing.B) {
+	totp, err := NewTOTP(AlgorithmSHA1, DigitsEight, "cristalhq", 30, 1)
+	failIfErr(b, err)
+
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		passcode, err := totp.GenerateCode(secretSha1, time.Now())
+		failIfErr(b, err)
+
+		if passcode == "" {
+			b.Fail()
+		}
+	}
+}
+
+func BenchmarkTOTP_Validate(b *testing.B) {
+	totp, err := NewTOTP(AlgorithmSHA1, DigitsEight, "cristalhq", 30, 1)
+	failIfErr(b, err)
+
+	secret := secretSha1
+	at := time.Now()
+	passcode, err := totp.GenerateCode(secret, at)
+	failIfErr(b, err)
+
+	b.ResetTimer()
+
+	for i := 0; i < b.N; i++ {
+		err := totp.Validate(passcode, at, secret)
+		failIfErr(b, err)
+	}
+}
