@@ -34,7 +34,13 @@ func TestTOTP(t *testing.T) {
 	}
 
 	for _, tc := range totpRFCTestCases {
-		totp, err := NewTOTP(tc.algo, Digits(8), "cristalhq", 30, 1)
+		totp, err := NewTOTP(TOTPConfig{
+			Algo:   tc.algo,
+			Digits: Digits(8),
+			Issuer: "cristalhq",
+			Period: 30,
+			Skew:   1,
+		})
 		mustOk(t, err)
 
 		at := time.Unix(tc.ts, 0).UTC()
@@ -48,15 +54,33 @@ func TestTOTP(t *testing.T) {
 }
 
 func TestNewTOTP(t *testing.T) {
-	_, err := NewTOTP(-1, Digits(8), "cristalhq", 30, 1)
+	_, err := NewTOTP(TOTPConfig{
+		Algo:   -1,
+		Digits: Digits(8),
+		Issuer: "cristalhq",
+		Period: 30,
+		Skew:   1,
+	})
 	mustEqual(t, err, ErrUnsupportedAlgorithm)
 
-	_, err = NewTOTP(1, Digits(8), "", 30, 1)
+	_, err = NewTOTP(TOTPConfig{
+		Algo:   1,
+		Digits: Digits(8),
+		Issuer: "",
+		Period: 30,
+		Skew:   1,
+	})
 	mustEqual(t, err, ErrEmptyIssuer)
 }
 
 func TestTOTPGenerateURL(t *testing.T) {
-	totp, err := NewTOTP(AlgorithmSHA1, Digits(8), "cristalhq", 30, 1)
+	totp, err := NewTOTP(TOTPConfig{
+		Algo:   AlgorithmSHA1,
+		Digits: Digits(8),
+		Issuer: "cristalhq",
+		Period: 30,
+		Skew:   1,
+	})
 	mustOk(t, err)
 
 	url := totp.GenerateURL("alice@bob.com", []byte("SECRET_STRING"))
@@ -67,7 +91,13 @@ func TestTOTPGenerateURL(t *testing.T) {
 }
 
 func BenchmarkTOTP_GenerateURL(b *testing.B) {
-	totp, err := NewTOTP(AlgorithmSHA1, Digits(8), "cristalhq", 30, 1)
+	totp, err := NewTOTP(TOTPConfig{
+		Algo:   AlgorithmSHA1,
+		Digits: Digits(8),
+		Issuer: "cristalhq",
+		Period: 30,
+		Skew:   1,
+	})
 	mustOk(b, err)
 
 	account := "otp@cristalhq.dev"
@@ -85,7 +115,13 @@ func BenchmarkTOTP_GenerateURL(b *testing.B) {
 }
 
 func BenchmarkTOTP_GenerateCode(b *testing.B) {
-	totp, err := NewTOTP(AlgorithmSHA1, Digits(8), "cristalhq", 30, 1)
+	totp, err := NewTOTP(TOTPConfig{
+		Algo:   AlgorithmSHA1,
+		Digits: Digits(8),
+		Issuer: "cristalhq",
+		Period: 30,
+		Skew:   1,
+	})
 	mustOk(b, err)
 
 	secret := secretSha1
@@ -102,7 +138,13 @@ func BenchmarkTOTP_GenerateCode(b *testing.B) {
 }
 
 func BenchmarkTOTP_Validate(b *testing.B) {
-	totp, err := NewTOTP(AlgorithmSHA1, Digits(8), "cristalhq", 30, 1)
+	totp, err := NewTOTP(TOTPConfig{
+		Algo:   AlgorithmSHA1,
+		Digits: Digits(8),
+		Issuer: "cristalhq",
+		Period: 30,
+		Skew:   1,
+	})
 	mustOk(b, err)
 
 	secret := secretSha1
