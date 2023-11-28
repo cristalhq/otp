@@ -25,7 +25,11 @@ func TestHOTP(t *testing.T) {
 	}
 
 	for _, tc := range hotpRFCTestCases {
-		hotp, err := NewHOTP(tc.algo, Digits(6), "cristalhq")
+		hotp, err := NewHOTP(HOTPConfig{
+			Algo:   tc.algo,
+			Digits: Digits(6),
+			Issuer: "cristalhq",
+		})
 		mustOk(t, err)
 
 		code, err := hotp.GenerateCode(tc.counter, tc.secret)
@@ -38,15 +42,27 @@ func TestHOTP(t *testing.T) {
 }
 
 func TestNewHOTP(t *testing.T) {
-	_, err := NewHOTP(-1, Digits(8), "cristalhq")
+	_, err := NewHOTP(HOTPConfig{
+		Algo:   -1,
+		Digits: Digits(8),
+		Issuer: "cristalhq",
+	})
 	mustEqual(t, err, ErrUnsupportedAlgorithm)
 
-	_, err = NewHOTP(1, Digits(8), "")
+	_, err = NewHOTP(HOTPConfig{
+		Algo:   1,
+		Digits: Digits(8),
+		Issuer: "",
+	})
 	mustEqual(t, err, ErrEmptyIssuer)
 }
 
 func TestHOTPGenerateURL(t *testing.T) {
-	hotp, err := NewHOTP(AlgorithmSHA1, Digits(8), "cristalhq")
+	hotp, err := NewHOTP(HOTPConfig{
+		Algo:   AlgorithmSHA1,
+		Digits: Digits(8),
+		Issuer: "cristalhq",
+	})
 	mustOk(t, err)
 
 	url := hotp.GenerateURL("alice@bob.com", []byte("SECRET_STRING"))
@@ -57,7 +73,11 @@ func TestHOTPGenerateURL(t *testing.T) {
 }
 
 func BenchmarkHOTP_GenerateURL(b *testing.B) {
-	hotp, err := NewHOTP(AlgorithmSHA1, Digits(8), "cristalhq")
+	hotp, err := NewHOTP(HOTPConfig{
+		Algo:   AlgorithmSHA1,
+		Digits: Digits(8),
+		Issuer: "cristalhq",
+	})
 	mustOk(b, err)
 
 	account := "otp@cristalhq.dev"
@@ -75,7 +95,11 @@ func BenchmarkHOTP_GenerateURL(b *testing.B) {
 }
 
 func BenchmarkHOTP_GenerateCode(b *testing.B) {
-	hotp, err := NewHOTP(AlgorithmSHA1, Digits(8), "cristalhq")
+	hotp, err := NewHOTP(HOTPConfig{
+		Algo:   AlgorithmSHA1,
+		Digits: Digits(8),
+		Issuer: "cristalhq",
+	})
 	mustOk(b, err)
 
 	b.ResetTimer()
@@ -90,7 +114,11 @@ func BenchmarkHOTP_GenerateCode(b *testing.B) {
 }
 
 func BenchmarkHOTP_Validate(b *testing.B) {
-	hotp, err := NewHOTP(AlgorithmSHA1, Digits(8), "cristalhq")
+	hotp, err := NewHOTP(HOTPConfig{
+		Algo:   AlgorithmSHA1,
+		Digits: Digits(8),
+		Issuer: "cristalhq",
+	})
 	mustOk(b, err)
 
 	secret := secretSha1
