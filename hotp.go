@@ -44,7 +44,7 @@ func (h *HOTP) GenerateURL(account string, secret []byte) string {
 	v.Set("algorithm", h.cfg.Algo.String())
 	v.Set("digits", h.cfg.Digits.String())
 	v.Set("issuer", h.cfg.Issuer)
-	v.Set("secret", b32EncNoPadding(secret))
+	v.Set("secret", b32Enc(secret))
 
 	u := url.URL{
 		Scheme:   "otpauth",

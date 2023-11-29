@@ -58,7 +58,7 @@ func (t *TOTP) GenerateURL(account string, secret []byte) string {
 	v.Set("algorithm", t.cfg.Algo.String())
 	v.Set("digits", t.cfg.Digits.String())
 	v.Set("issuer", t.cfg.Issuer)
-	v.Set("secret", b32EncNoPadding(secret))
+	v.Set("secret", b32Enc(secret))
 	v.Set("period", strconv.FormatUint(uint64(t.cfg.Period), 10))
 
 	u := url.URL{

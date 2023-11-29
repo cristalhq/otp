@@ -1,7 +1,6 @@
 package otp
 
 import (
-	"encoding/base32"
 	"reflect"
 	"testing"
 )
@@ -60,7 +59,7 @@ func TestKey(t *testing.T) {
 }
 
 func b32(s string) string {
-	return base32.StdEncoding.EncodeToString([]byte(s))
+	return b32Enc([]byte(s))
 }
 
 func mustOk(tb testing.TB, err error) {

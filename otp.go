@@ -140,13 +140,9 @@ func (k *Key) Period() uint64 {
 }
 
 func b32Dec(s string) ([]byte, error) {
-	// add padding if missing
-	if n := len(s) % 8; n != 0 {
-		s += strings.Repeat("=", 8-n)
-	}
-	return base32.StdEncoding.DecodeString(s)
+	return base32.StdEncoding.WithPadding(base32.NoPadding).DecodeString(s)
 }
 
-func b32EncNoPadding(src []byte) string {
+func b32Enc(src []byte) string {
 	return base32.StdEncoding.WithPadding(base32.NoPadding).EncodeToString(src)
 }
