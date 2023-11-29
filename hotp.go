@@ -21,8 +21,10 @@ type HOTPConfig struct {
 
 func (cfg HOTPConfig) Validate() error {
 	switch {
-	case cfg.Algo < 0 || cfg.Algo >= algorithmMax:
+	case cfg.Algo == 0 || cfg.Algo >= algorithmMax:
 		return ErrUnsupportedAlgorithm
+	case cfg.Digits == 0:
+		return ErrNoDigits
 	case cfg.Issuer == "":
 		return ErrEmptyIssuer
 	default:

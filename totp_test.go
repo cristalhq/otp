@@ -55,7 +55,16 @@ func TestTOTP(t *testing.T) {
 
 func TestNewTOTP(t *testing.T) {
 	_, err := NewTOTP(TOTPConfig{
-		Algo:   -1,
+		Algo:   0,
+		Digits: Digits(8),
+		Issuer: "cristalhq",
+		Period: 30,
+		Skew:   1,
+	})
+	mustEqual(t, err, ErrUnsupportedAlgorithm)
+
+	_, err = NewTOTP(TOTPConfig{
+		Algo:   100,
 		Digits: Digits(8),
 		Issuer: "cristalhq",
 		Period: 30,
@@ -65,12 +74,39 @@ func TestNewTOTP(t *testing.T) {
 
 	_, err = NewTOTP(TOTPConfig{
 		Algo:   1,
+		Digits: Digits(0),
+		Issuer: "cristalhq",
+		Period: 30,
+		Skew:   1,
+	})
+	mustEqual(t, err, ErrNoDigits)
+
+	_, err = NewTOTP(TOTPConfig{
+		Algo:   1,
 		Digits: Digits(8),
 		Issuer: "",
 		Period: 30,
 		Skew:   1,
 	})
 	mustEqual(t, err, ErrEmptyIssuer)
+
+	_, err = NewTOTP(TOTPConfig{
+		Algo:   1,
+		Digits: Digits(8),
+		Issuer: "cristalhq",
+		Period: 0,
+		Skew:   1,
+	})
+	mustEqual(t, err, ErrPeriodNotValid)
+
+	_, err = NewTOTP(TOTPConfig{
+		Algo:   1,
+		Digits: Digits(8),
+		Issuer: "cristalhq",
+		Period: 30,
+		Skew:   0,
+	})
+	mustEqual(t, err, ErrSkewNotValid)
 }
 
 func TestTOTPGenerateURL(t *testing.T) {

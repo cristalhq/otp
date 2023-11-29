@@ -15,6 +15,7 @@ import (
 
 var (
 	ErrUnsupportedAlgorithm = errors.New("unsupported algorithm")
+	ErrNoDigits             = errors.New("required digits not set")
 	ErrEmptyIssuer          = errors.New("empty issuer")
 	ErrPeriodNotValid       = errors.New("period is not valid")
 	ErrSkewNotValid         = errors.New("skew is not valid")
@@ -24,7 +25,7 @@ var (
 )
 
 // Algorithm represents the hashing function to use for OTP.
-type Algorithm int
+type Algorithm uint
 
 const (
 	AlgorithmUnknown Algorithm = 0

@@ -43,11 +43,25 @@ func TestHOTP(t *testing.T) {
 
 func TestNewHOTP(t *testing.T) {
 	_, err := NewHOTP(HOTPConfig{
-		Algo:   -1,
+		Algo:   0,
 		Digits: Digits(8),
 		Issuer: "cristalhq",
 	})
 	mustEqual(t, err, ErrUnsupportedAlgorithm)
+
+	_, err = NewHOTP(HOTPConfig{
+		Algo:   100,
+		Digits: Digits(8),
+		Issuer: "cristalhq",
+	})
+	mustEqual(t, err, ErrUnsupportedAlgorithm)
+
+	_, err = NewHOTP(HOTPConfig{
+		Algo:   1,
+		Digits: Digits(0),
+		Issuer: "cristalhq",
+	})
+	mustEqual(t, err, ErrNoDigits)
 
 	_, err = NewHOTP(HOTPConfig{
 		Algo:   1,
