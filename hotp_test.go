@@ -27,7 +27,7 @@ func TestHOTP(t *testing.T) {
 	for _, tc := range hotpRFCTestCases {
 		hotp, err := NewHOTP(HOTPConfig{
 			Algo:   tc.algo,
-			Digits: Digits(6),
+			Digits: 6,
 			Issuer: "cristalhq",
 		})
 		mustOk(t, err)
@@ -44,28 +44,28 @@ func TestHOTP(t *testing.T) {
 func TestNewHOTP(t *testing.T) {
 	_, err := NewHOTP(HOTPConfig{
 		Algo:   0,
-		Digits: Digits(8),
+		Digits: 8,
 		Issuer: "cristalhq",
 	})
 	mustEqual(t, err, ErrUnsupportedAlgorithm)
 
 	_, err = NewHOTP(HOTPConfig{
 		Algo:   100,
-		Digits: Digits(8),
+		Digits: 8,
 		Issuer: "cristalhq",
 	})
 	mustEqual(t, err, ErrUnsupportedAlgorithm)
 
 	_, err = NewHOTP(HOTPConfig{
 		Algo:   1,
-		Digits: Digits(0),
+		Digits: 0,
 		Issuer: "cristalhq",
 	})
 	mustEqual(t, err, ErrNoDigits)
 
 	_, err = NewHOTP(HOTPConfig{
 		Algo:   1,
-		Digits: Digits(8),
+		Digits: 8,
 		Issuer: "",
 	})
 	mustEqual(t, err, ErrEmptyIssuer)
@@ -74,7 +74,7 @@ func TestNewHOTP(t *testing.T) {
 func TestHOTPGenerateURL(t *testing.T) {
 	hotp, err := NewHOTP(HOTPConfig{
 		Algo:   AlgorithmSHA1,
-		Digits: Digits(8),
+		Digits: 8,
 		Issuer: "cristalhq",
 	})
 	mustOk(t, err)
@@ -89,7 +89,7 @@ func TestHOTPGenerateURL(t *testing.T) {
 func BenchmarkHOTP_GenerateURL(b *testing.B) {
 	hotp, err := NewHOTP(HOTPConfig{
 		Algo:   AlgorithmSHA1,
-		Digits: Digits(8),
+		Digits: 8,
 		Issuer: "cristalhq",
 	})
 	mustOk(b, err)
@@ -111,7 +111,7 @@ func BenchmarkHOTP_GenerateURL(b *testing.B) {
 func BenchmarkHOTP_GenerateCode(b *testing.B) {
 	hotp, err := NewHOTP(HOTPConfig{
 		Algo:   AlgorithmSHA1,
-		Digits: Digits(8),
+		Digits: 8,
 		Issuer: "cristalhq",
 	})
 	mustOk(b, err)
@@ -130,7 +130,7 @@ func BenchmarkHOTP_GenerateCode(b *testing.B) {
 func BenchmarkHOTP_Validate(b *testing.B) {
 	hotp, err := NewHOTP(HOTPConfig{
 		Algo:   AlgorithmSHA1,
-		Digits: Digits(8),
+		Digits: 8,
 		Issuer: "cristalhq",
 	})
 	mustOk(b, err)

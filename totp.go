@@ -3,7 +3,6 @@ package otp
 import (
 	"math"
 	"net/url"
-	"strconv"
 	"time"
 )
 
@@ -15,7 +14,7 @@ type TOTP struct {
 
 type TOTPConfig struct {
 	Algo   Algorithm
-	Digits Digits
+	Digits uint
 	Issuer string
 	Period uint
 	Skew   uint
@@ -62,10 +61,10 @@ func NewTOTP(cfg TOTPConfig) (*TOTP, error) {
 func (t *TOTP) GenerateURL(account string, secret []byte) string {
 	v := url.Values{}
 	v.Set("algorithm", t.cfg.Algo.String())
-	v.Set("digits", t.cfg.Digits.String())
+	v.Set("digits", atoi(t.cfg.Digits))
 	v.Set("issuer", t.cfg.Issuer)
 	v.Set("secret", b32Enc(secret))
-	v.Set("period", strconv.FormatUint(uint64(t.cfg.Period), 10))
+	v.Set("period", atoi(t.cfg.Period))
 
 	u := url.URL{
 		Scheme:   "otpauth",
@@ -88,7 +87,7 @@ func (t *TOTP) GenerateCode(secret string, at time.Time) (string, error) {
 
 // Validate the given passcode, time and secret.
 func (t *TOTP) Validate(passcode string, at time.Time, secret string) error {
-	if len(passcode) != t.cfg.Digits.Length() {
+	if len(passcode) != int(t.cfg.Digits) {
 		return ErrCodeLengthMismatch
 	}
 

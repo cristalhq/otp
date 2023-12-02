@@ -36,7 +36,7 @@ func TestTOTP(t *testing.T) {
 	for _, tc := range totpRFCTestCases {
 		totp, err := NewTOTP(TOTPConfig{
 			Algo:   tc.algo,
-			Digits: Digits(8),
+			Digits: 8,
 			Issuer: "cristalhq",
 			Period: 30,
 			Skew:   1,
@@ -56,7 +56,7 @@ func TestTOTP(t *testing.T) {
 func TestNewTOTP(t *testing.T) {
 	_, err := NewTOTP(TOTPConfig{
 		Algo:   0,
-		Digits: Digits(8),
+		Digits: 8,
 		Issuer: "cristalhq",
 		Period: 30,
 		Skew:   1,
@@ -65,7 +65,7 @@ func TestNewTOTP(t *testing.T) {
 
 	_, err = NewTOTP(TOTPConfig{
 		Algo:   100,
-		Digits: Digits(8),
+		Digits: 8,
 		Issuer: "cristalhq",
 		Period: 30,
 		Skew:   1,
@@ -74,7 +74,7 @@ func TestNewTOTP(t *testing.T) {
 
 	_, err = NewTOTP(TOTPConfig{
 		Algo:   1,
-		Digits: Digits(0),
+		Digits: 0,
 		Issuer: "cristalhq",
 		Period: 30,
 		Skew:   1,
@@ -83,7 +83,7 @@ func TestNewTOTP(t *testing.T) {
 
 	_, err = NewTOTP(TOTPConfig{
 		Algo:   1,
-		Digits: Digits(8),
+		Digits: 8,
 		Issuer: "",
 		Period: 30,
 		Skew:   1,
@@ -92,7 +92,7 @@ func TestNewTOTP(t *testing.T) {
 
 	_, err = NewTOTP(TOTPConfig{
 		Algo:   1,
-		Digits: Digits(8),
+		Digits: 8,
 		Issuer: "cristalhq",
 		Period: 0,
 		Skew:   1,
@@ -101,7 +101,7 @@ func TestNewTOTP(t *testing.T) {
 
 	_, err = NewTOTP(TOTPConfig{
 		Algo:   1,
-		Digits: Digits(8),
+		Digits: 8,
 		Issuer: "cristalhq",
 		Period: 30,
 		Skew:   0,
@@ -112,7 +112,7 @@ func TestNewTOTP(t *testing.T) {
 func TestTOTPGenerateURL(t *testing.T) {
 	totp, err := NewTOTP(TOTPConfig{
 		Algo:   AlgorithmSHA1,
-		Digits: Digits(8),
+		Digits: 8,
 		Issuer: "cristalhq",
 		Period: 30,
 		Skew:   1,
@@ -129,7 +129,7 @@ func TestTOTPGenerateURL(t *testing.T) {
 func BenchmarkTOTP_GenerateURL(b *testing.B) {
 	totp, err := NewTOTP(TOTPConfig{
 		Algo:   AlgorithmSHA1,
-		Digits: Digits(8),
+		Digits: 8,
 		Issuer: "cristalhq",
 		Period: 30,
 		Skew:   1,
@@ -153,7 +153,7 @@ func BenchmarkTOTP_GenerateURL(b *testing.B) {
 func BenchmarkTOTP_GenerateCode(b *testing.B) {
 	totp, err := NewTOTP(TOTPConfig{
 		Algo:   AlgorithmSHA1,
-		Digits: Digits(8),
+		Digits: 8,
 		Issuer: "cristalhq",
 		Period: 30,
 		Skew:   1,
@@ -176,7 +176,7 @@ func BenchmarkTOTP_GenerateCode(b *testing.B) {
 func BenchmarkTOTP_Validate(b *testing.B) {
 	totp, err := NewTOTP(TOTPConfig{
 		Algo:   AlgorithmSHA1,
-		Digits: Digits(8),
+		Digits: 8,
 		Issuer: "cristalhq",
 		Period: 30,
 		Skew:   1,

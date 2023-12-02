@@ -4,6 +4,7 @@ import (
 	"crypto/hmac"
 	"crypto/subtle"
 	"encoding/binary"
+	"fmt"
 	"math"
 	"net/url"
 )
@@ -15,7 +16,7 @@ type HOTP struct {
 
 type HOTPConfig struct {
 	Algo   Algorithm
-	Digits Digits
+	Digits uint
 	Issuer string
 }
 
@@ -44,7 +45,7 @@ func NewHOTP(cfg HOTPConfig) (*HOTP, error) {
 func (h *HOTP) GenerateURL(account string, secret []byte) string {
 	v := url.Values{}
 	v.Set("algorithm", h.cfg.Algo.String())
-	v.Set("digits", h.cfg.Digits.String())
+	v.Set("digits", atoi(h.cfg.Digits))
 	v.Set("issuer", h.cfg.Issuer)
 	v.Set("secret", b32Enc(secret))
 
@@ -79,13 +80,14 @@ func (h *HOTP) GenerateCode(counter uint64, secret string) (string, error) {
 	value |= int64(sum[offset+2]&0xff) << 8
 	value |= int64(sum[offset+3] & 0xff)
 
-	length := int64(math.Pow10(h.cfg.Digits.Length()))
-	return h.cfg.Digits.Format(int(value % length)), nil
+	length := int64(math.Pow10(int(h.cfg.Digits)))
+	code := fmt.Sprintf(fmt.Sprintf("%%0%dd", h.cfg.Digits), value%length)
+	return code, nil
 }
 
 // Validate the given passcode, counter and secret.
 func (h *HOTP) Validate(passcode string, counter uint64, secret string) error {
-	if len(passcode) != h.cfg.Digits.Length() {
+	if len(passcode) != int(h.cfg.Digits) {
 		return ErrCodeLengthMismatch
 	}
 
