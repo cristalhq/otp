@@ -10,7 +10,7 @@ import (
 func ExampleHOTP() {
 	hotp, err := otp.NewHOTP(otp.HOTPConfig{
 		Algo:   otp.AlgorithmSHA1,
-		Digits: otp.Digits(10),
+		Digits: 10,
 		Issuer: "cristalhq",
 	})
 	checkErr(err)
@@ -31,7 +31,7 @@ func ExampleHOTP() {
 func ExampleTOTP() {
 	totp, err := otp.NewTOTP(otp.TOTPConfig{
 		Algo:   otp.AlgorithmSHA1,
-		Digits: otp.Digits(10),
+		Digits: 10,
 		Issuer: "cristalhq",
 		Period: 30,
 		Skew:   2,

@@ -65,19 +65,6 @@ func (a Algorithm) Hash() hash.Hash {
 	}
 }
 
-// Digits is the number of digits in the OTP passcode.
-type Digits uint
-
-func (d Digits) String() string { return fmt.Sprintf("%d", d) }
-
-// Length of the passcode.
-func (d Digits) Length() int { return int(d) }
-
-// Format the number to a digit format (zero-filled upto digits size).
-func (d Digits) Format(n int) string {
-	return fmt.Sprintf(fmt.Sprintf("%%0%dd", d), n)
-}
-
 // Key represents an HTOP or TOTP key.
 type Key struct {
 	url    *url.URL
@@ -146,4 +133,8 @@ func b32Dec(s string) ([]byte, error) {
 
 func b32Enc(src []byte) string {
 	return base32.StdEncoding.WithPadding(base32.NoPadding).EncodeToString(src)
+}
+
+func atoi(v uint) string {
+	return strconv.FormatUint(uint64(v), 10)
 }
