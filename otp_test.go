@@ -13,36 +13,103 @@ var (
 
 func TestKey(t *testing.T) {
 	testCases := []struct {
-		url     string
-		typ     string
-		issuer  string
-		account string
-		secret  string
-		period  int
+		url       string
+		typ       string
+		issuer    string
+		account   string
+		secret    string
+		period    int
+		digits    uint
+		counter   uint64
+		algorithm Algorithm
 	}{
 		{
-			url:     "otpauth://totp/Example:alice@bob.com?secret=JBSWY3DPEHPK3PXP&issuer=Example",
-			typ:     "totp",
-			issuer:  "Example",
-			account: "alice@bob.com",
-			secret:  "JBSWY3DPEHPK3PXP",
-			period:  30,
+			url:       "otpauth://totp/Example:alice@bob.com?secret=JBSWY3DPEHPK3PXP&issuer=Example",
+			typ:       "totp",
+			issuer:    "Example",
+			account:   "alice@bob.com",
+			secret:    "JBSWY3DPEHPK3PXP",
+			period:    30,
+			digits:    0,
+			counter:   0,
+			algorithm: AlgorithmUnknown,
 		},
 		{
-			url:     "otpauth://hotp/alice@bob.com?secret=JBSWY3DPEHPK3PXP",
-			typ:     "hotp",
-			issuer:  "",
-			account: "alice@bob.com",
-			secret:  "JBSWY3DPEHPK3PXP",
-			period:  30,
+			url:       "otpauth://hotp/alice@bob.com?secret=JBSWY3DPEHPK3PXP",
+			typ:       "hotp",
+			issuer:    "",
+			account:   "alice@bob.com",
+			secret:    "JBSWY3DPEHPK3PXP",
+			period:    30,
+			digits:    0,
+			counter:   0,
+			algorithm: AlgorithmUnknown,
 		},
 		{
-			url:     "otpauth://totp/Example:alice@bob.com?secret=JBSWY3DPEHPK3PXP&period=42",
-			typ:     "totp",
-			issuer:  "Example",
-			account: "alice@bob.com",
-			secret:  "JBSWY3DPEHPK3PXP",
-			period:  42,
+			url:       "otpauth://totp/Example:alice@bob.com?secret=JBSWY3DPEHPK3PXP&period=42",
+			typ:       "totp",
+			issuer:    "Example",
+			account:   "alice@bob.com",
+			secret:    "JBSWY3DPEHPK3PXP",
+			period:    42,
+			digits:    0,
+			counter:   0,
+			algorithm: AlgorithmUnknown,
+		},
+		{
+			url:       "otpauth://totp/Example:alice@bob.com?secret=JBSWY3DPEHPK3PXP&period=42&digits=8",
+			typ:       "totp",
+			issuer:    "Example",
+			account:   "alice@bob.com",
+			secret:    "JBSWY3DPEHPK3PXP",
+			period:    42,
+			digits:    8,
+			counter:   0,
+			algorithm: AlgorithmUnknown,
+		},
+		{
+			url:       "otpauth://totp/Example:alice@bob.com?secret=JBSWY3DPEHPK3PXP&period=42&counter=42",
+			typ:       "totp",
+			issuer:    "Example",
+			account:   "alice@bob.com",
+			secret:    "JBSWY3DPEHPK3PXP",
+			period:    42,
+			digits:    0,
+			counter:   42,
+			algorithm: AlgorithmUnknown,
+		},
+		{
+			url:       "otpauth://totp/Example:alice@bob.com?secret=JBSWY3DPEHPK3PXP&period=42&algorithm=SHA1",
+			typ:       "totp",
+			issuer:    "Example",
+			account:   "alice@bob.com",
+			secret:    "JBSWY3DPEHPK3PXP",
+			period:    42,
+			digits:    0,
+			counter:   0,
+			algorithm: AlgorithmSHA1,
+		},
+		{
+			url:       "otpauth://totp/Example:alice@bob.com?secret=JBSWY3DPEHPK3PXP&period=42&algorithm=SHA256",
+			typ:       "totp",
+			issuer:    "Example",
+			account:   "alice@bob.com",
+			secret:    "JBSWY3DPEHPK3PXP",
+			period:    42,
+			digits:    0,
+			counter:   0,
+			algorithm: AlgorithmSHA256,
+		},
+		{
+			url:       "otpauth://totp/Example:alice@bob.com?secret=JBSWY3DPEHPK3PXP&period=42&algorithm=SHA512",
+			typ:       "totp",
+			issuer:    "Example",
+			account:   "alice@bob.com",
+			secret:    "JBSWY3DPEHPK3PXP",
+			period:    42,
+			digits:    0,
+			counter:   0,
+			algorithm: AlgorithmSHA512,
 		},
 	}
 
@@ -55,6 +122,9 @@ func TestKey(t *testing.T) {
 		mustEqual(t, key.Account(), tc.account)
 		mustEqual(t, key.Secret(), tc.secret)
 		mustEqual(t, key.Period(), uint64(tc.period))
+		mustEqual(t, key.Digits(), tc.digits)
+		mustEqual(t, key.Counter(), tc.counter)
+		mustEqual(t, key.Algorithm(), tc.algorithm)
 	}
 }
 
