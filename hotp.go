@@ -45,7 +45,7 @@ func NewHOTP(cfg HOTPConfig) (*HOTP, error) {
 func (h *HOTP) GenerateURL(account string, secret []byte) string {
 	v := url.Values{}
 	v.Set("algorithm", h.cfg.Algo.String())
-	v.Set("digits", atoi(h.cfg.Digits))
+	v.Set("digits", atoi(uint64(h.cfg.Digits)))
 	v.Set("issuer", h.cfg.Issuer)
 	v.Set("secret", b32Enc(secret))
 

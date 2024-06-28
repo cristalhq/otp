@@ -170,6 +170,6 @@ func b32Enc(src []byte) string {
 	return base32.StdEncoding.WithPadding(base32.NoPadding).EncodeToString(src)
 }
 
-func atoi(v uint) string {
-	return strconv.FormatUint(uint64(v), 10)
+func atoi(v uint64) string {
+	return strconv.FormatUint(v, 10)
 }
