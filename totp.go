@@ -16,7 +16,7 @@ type TOTPConfig struct {
 	Algo   Algorithm
 	Digits uint
 	Issuer string
-	Period uint
+	Period uint64
 	Skew   uint
 }
 
@@ -61,7 +61,7 @@ func NewTOTP(cfg TOTPConfig) (*TOTP, error) {
 func (t *TOTP) GenerateURL(account string, secret []byte) string {
 	v := url.Values{}
 	v.Set("algorithm", t.cfg.Algo.String())
-	v.Set("digits", atoi(t.cfg.Digits))
+	v.Set("digits", atoi(uint64(t.cfg.Digits)))
 	v.Set("issuer", t.cfg.Issuer)
 	v.Set("secret", b32Enc(secret))
 	v.Set("period", atoi(t.cfg.Period))
