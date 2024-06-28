@@ -127,6 +127,46 @@ func (k *Key) Period() uint64 {
 	return 30 // If no period is defined 30 seconds is the default per (RFC 6238)
 }
 
+// Digits returns the digits value.
+func (k *Key) Digits() uint {
+	var u uint
+
+	if digits := k.values.Get("digits"); digits != "" {
+		if val, err := strconv.ParseUint(digits, 10, 32); err == nil {
+			u = uint(val)
+		}
+	}
+
+	return u
+}
+
+// Counter returns the counter value.
+func (k *Key) Counter() uint64 {
+	if counter := k.values.Get("counter"); counter != "" {
+		if val, err := strconv.ParseUint(counter, 10, 64); err == nil {
+			return val
+		}
+	}
+
+	return 0
+}
+
+// Algorithm returns the algorithm type.
+func (k *Key) Algorithm() Algorithm {
+	if algorithm := k.values.Get("algorithm"); algorithm != "" {
+		switch strings.ToUpper(algorithm) {
+		case "SHA1":
+			return AlgorithmSHA1
+		case "SHA256":
+			return AlgorithmSHA256
+		case "SHA512":
+			return AlgorithmSHA512
+		}
+	}
+
+	return AlgorithmUnknown
+}
+
 func b32Dec(s string) ([]byte, error) {
 	return base32.StdEncoding.WithPadding(base32.NoPadding).DecodeString(s)
 }
