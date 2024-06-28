@@ -76,7 +76,7 @@ type Key struct {
 func ParseKeyFromURL(s string) (*Key, error) {
 	u, err := url.Parse(s)
 	if err != nil {
-		return nil, err
+		return nil, errors.New("otp: invalid otpauth URL")
 	}
 	key := &Key{
 		url:    u,
