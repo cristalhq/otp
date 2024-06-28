@@ -129,15 +129,12 @@ func (k *Key) Period() uint64 {
 
 // Digits returns the digits value.
 func (k *Key) Digits() uint {
-	var u uint
-
 	if digits := k.values.Get("digits"); digits != "" {
 		if val, err := strconv.ParseUint(digits, 10, 32); err == nil {
-			u = uint(val)
+			return uint(val)
 		}
 	}
-
-	return u
+	return 0
 }
 
 // Counter returns the counter value.
@@ -147,7 +144,6 @@ func (k *Key) Counter() uint64 {
 			return val
 		}
 	}
-
 	return 0
 }
 
@@ -163,7 +159,6 @@ func (k *Key) Algorithm() Algorithm {
 			return AlgorithmSHA512
 		}
 	}
-
 	return AlgorithmUnknown
 }
 
