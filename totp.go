@@ -91,19 +91,21 @@ func (t *TOTP) Validate(passcode string, at time.Time, secret string) error {
 		return ErrCodeLengthMismatch
 	}
 
-	counters := make([]uint64, 0, 2*t.cfg.Skew+1)
 	counter := int64(math.Floor(float64(at.Unix()) / float64(t.cfg.Period)))
-	counters = append(counters, uint64(counter))
 
-	for i := uint(1); i <= t.cfg.Skew; i++ {
-		counters = append(counters, uint64(counter+int64(i)), uint64(counter-int64(i)))
+	if err := t.hotp.Validate(passcode, uint64(counter), secret); err == nil {
+		return nil
 	}
 
-	for _, counter := range counters {
-		err := t.hotp.Validate(passcode, counter, secret)
-		if err == nil {
+	for i := uint(1); i <= t.cfg.Skew; i++ {
+		if err := t.hotp.Validate(passcode, uint64(counter+int64(i)), secret); err == nil {
+			return nil
+		}
+
+		if err := t.hotp.Validate(passcode, uint64(counter-int64(i)), secret); err == nil {
 			return nil
 		}
 	}
+
 	return ErrCodeIsNotValid
 }
